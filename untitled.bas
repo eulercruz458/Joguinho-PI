@@ -31,7 +31,7 @@ Do
     If dificuldade = 1 Or dificuldade = 2 Or dificuldade = 3 Then
         Exit Do
     Else
-        Print "Digite apenas um das dificulades disponiveis nas opcoes"
+        Print "Digite apenas um dos numeros disponiveis nas opcoes"
     End If
 Loop
 
@@ -131,7 +131,7 @@ Sub TelaInicial ()
     TEXTWIDTH = 80
     TEXTLENGTH = Len(TEXT$)
 
-    ' Calcular a posição horizontal para centralizar
+    ' Calcular a posiÃ§Ã£o horizontal para centralizar
     X = (TEXTWIDTH - TEXTLENGTH) \ 2
 
     ' Desenhar o texto centralizado
@@ -144,16 +144,15 @@ Sub TelaInicial ()
     Print
     Print "Pressione qualquer tecla para comecar..."
 
-    ' Tocar música
+    ' Tocar mÃºsica
     TocarMusica
 
     ' Esperar a tecla ser pressionada para continuar
     While InKey$ = "": Wend
 
-    ' Parar a música
+    ' Parar a mÃºsica
     PararMusica
 End Sub
-
 
 Sub AtualizaStatus (acao$, dificuldade%)
     Select Case acao$
@@ -180,7 +179,7 @@ Sub AtualizaStatus (acao$, dificuldade%)
                 energia = energia - 5
                 moral = moral - 5
             End If
-            If temperatura < 28 Then temperatura = 28 ' Temperatura mínima
+            If temperatura < 28 Then temperatura = 28 ' Temperatura mÃ­nima
             If sede < 0 Then sede = 0
             If energia < 0 Then energia = 0
             If moral < 0 Then moral = 0
@@ -222,9 +221,9 @@ Sub VerificaEventosAleatorios ()
         Print "Uma tempestade de areia apareceu!"
         moral = moral - 10
         sede = sede + 10
-        If dificuldade = -4 Then ' Somente no modo difícil
+        If dificuldade = -4 Then ' Somente no modo difÃ­cil
             temperatura = temperatura - 3 ' Reduz a temperatura
-            If temperatura < 28 Then temperatura = 28 ' Temperatura mínima
+            If temperatura < 28 Then temperatura = 28 ' Temperatura mÃ­nima
         End If
     End If
 End Sub
@@ -267,4 +266,3 @@ Sub PararMusica ()
     ' Finaliza a musica (se necessario)
     Sound 0, 0
 End Sub
-
