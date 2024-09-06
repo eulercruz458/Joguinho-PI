@@ -49,6 +49,7 @@ Print "Voce e um viajante atravessando o deserto em busca de um oasis. Boa sorte
 Print "A jornada dura 20 dias. Sobreviva para vencer!"
 
 Do While dia <= 20 And energia > 0
+    Cls ' Limpa a tela a cada novo turno
     Print "Dia "; dia
     ExibeStatus
 
@@ -71,22 +72,27 @@ Do While dia <= 20 And energia > 0
         End If
     Loop
 
+    ' Processa a escolha do jogador e exibe mensagens
     Select Case escolha$
         Case "1"
             AtualizaStatus "andar", dificuldade
+            Print "Você andou um árduo dia no deserto, sua energia e moral diminuíram, e sua sede e temperatura aumentaram."
         Case "2"
             AtualizaStatus "descansar", dificuldade
+            Print "Você recuperou energia para sua jornada, mas ficar parado também aumenta sua temperatura."
         Case "3"
             If dificuldade <> -4 Then
                 AtualizaStatus "refrescar", dificuldade
+                Print "Você encontrou um pequeno poço, sua sede e temperatura diminuíram, mas sua energia e moral também."
             Else
-                Print "A opcao de refrescar-se nao esta disponivel neste nivel de dificuldade."
+                Print "A opção de refrescar-se não está disponível neste nível de dificuldade."
             End If
         Case "4"
             If dificuldade <> -4 Then
-                VerificaEventosAleatorios
+                AtualizaStatus "beber agua", dificuldade
+                Print "Você bebeu água e diminuiu a sua sede."
             Else
-                Print "Beber agua nao esta disponivel neste nivel de dificuldade."
+                Print "Beber água não está disponível neste nível de dificuldade."
             End If
     End Select
 
@@ -98,18 +104,35 @@ Do While dia <= 20 And energia > 0
 
     dia = dia + 1
 
-    ' Verificar condicoes de derrota
+    ' Verificar condições de derrota
     If energia <= 0 Then
-        Print "Voce desmaiou de exaustao!"
+        Print "Você desmaiou de exaustão!"
+        Exit Do
     End If
+
+    ' Verificar eventos aleatórios
+    VerificaEventosAleatorios
+
+    ' Esperar o jogador pressionar Enter antes de continuar
+    Print "Pressione Enter para continuar..."
+    While InKey$ <> Chr$(13) ' 13 é o código ASCII para Enter
+    Wend
+    Cls ' Limpa a tela antes de continuar para o próximo turno
 Loop
 
-' Verificacao final de vitoria
+' Verificação final de vitória
+Cls ' Limpa a tela antes de exibir a verificação final
 If energia > 40 And sede < 50 And moral >= 50 And temperatura >= 29 And temperatura <= 38 Then
-    Print "Parabens! Voce sobreviveu a travessia e chegou ao oasis!"
+    Print "Parabéns! Você sobreviveu à travessia e chegou ao oásis!"
 Else
-    Print "Voce chegou ao oasis, mas em condicoes ruins. A jornada foi falha."
+    Print "Você chegou ao oásis, mas em condições ruins. A jornada foi falha."
 End If
+
+' Esperar o jogador pressionar Enter antes de mostrar o gráfico
+Print "Pressione Enter para ver o gráfico de status..."
+While InKey$ <> Chr$(13) ' 13 é o código ASCII para Enter
+Wend
+Cls ' Limpa a tela antes de mostrar o gráfico
 
 ' Mostrar gráfico colorido no final
 DesenhaGraficoColorido
@@ -163,12 +186,10 @@ Sub AtualizaStatus (acao$, dificuldade%)
             sede = sede + Abs(dificuldade%)
             moral = moral + dificuldade% \ 2
             temperatura = temperatura + 1
-            Print "Voce andou. Atravessar o deserto e exaustivo."
         Case "descansar"
             energia = energia + (10 + dificuldade%)
             sede = sede + 2
             temperatura = temperatura + 0.5 ' Aumenta a temperatura ao descansar
-            Print "Voce descansou, recuperou energia, mas o calor aumentou."
         Case "refrescar"
             If dificuldade = -2 Then
                 temperatura = temperatura - 5
@@ -185,7 +206,7 @@ Sub AtualizaStatus (acao$, dificuldade%)
             If sede < 0 Then sede = 0
             If energia < 0 Then energia = 0
             If moral < 0 Then moral = 0
-            Print "Voce encontrou uma sombra e se refrescou. A temperatura e a sede foram reduzidas, mas sua energia e moral diminuiram."
+
         Case "beber agua"
             If dificuldade = -2 Then
                 sede = sede - 15
@@ -195,7 +216,6 @@ Sub AtualizaStatus (acao$, dificuldade%)
                 sede = sede - 5
             End If
             If sede < 0 Then sede = 0
-            Print "Voce bebeu agua. A sede foi reduzida."
     End Select
 End Sub
 
@@ -208,26 +228,24 @@ End Sub
 
 Sub VerificaEventosAleatorios ()
     Randomize Timer
-    evento = Int(Rnd * 2) + 1
-    If evento = 1 Then
-        Print "Voce encontrou uma fonte de agua!"
-        If dificuldade = -2 Then
-            sede = sede - 15
-        ElseIf dificuldade = -3 Then
-            sede = sede - 10
-        Else
-            sede = sede - 5
-        End If
-        If sede < 0 Then sede = 0
-    ElseIf evento = 2 Then
-        Print "Uma tempestade de areia apareceu!"
-        moral = moral - 10
-        sede = sede + 10
-        If dificuldade = -4 Then ' Somente no modo difícil
-            temperatura = temperatura - 3 ' Reduz a temperatura
-            If temperatura < 28 Then temperatura = 28 ' Temperatura mínima
-        End If
-    End If
+    evento = Int(Rnd * 7) + 1 ' Probabilidade de 1/7 para cada evento
+
+    Select Case evento
+        Case 1 ' Tempestade de areia
+            Print "Uma tempestade de areia apareceu!"
+            energia = energia - 10
+            sede = sede + 5
+            temperatura = temperatura + 2
+            If energia < 0 Then energia = 0
+            If sede > 100 Then sede = 100
+            If temperatura > 40 Then temperatura = 40
+        Case 2 ' Fonte de água
+            Print "Voce encontrou uma fonte de agua!"
+            sede = sede + 10
+            temperatura = temperatura - 3
+            If sede > 100 Then sede = 100
+            If temperatura < 28 Then temperatura = 28
+    End Select
 End Sub
 
 Sub DesenhaGraficoColorido ()
