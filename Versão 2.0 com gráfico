@@ -1,0 +1,36 @@
+Sub DesenhaGraficoColorido ()
+    Cls
+    Print "Grafico de Status ao longo dos 20 dias:"
+
+    ' Desenho do gráfico
+    For dia = 1 To 20
+        ' Cor para Energia (Verde)
+        Color 2
+        Print "Dia "; dia; " - Energia: "; String$(status_energia(dia) \ 2, Chr$(219))
+
+        ' Cor para Sede (Azul)
+        Color 1
+        Print "Dia "; dia; " - Sede: "; String$(status_sede(dia) \ 2, Chr$(219))
+
+        ' Cor para Moral (Amarelo)
+        Color 14
+        Print "Dia "; dia; " - Moral: "; String$(status_moral(dia) \ 2, Chr$(219))
+
+        ' Cor para Temperatura (Vermelho)
+        Color 4
+        Print "Dia "; dia; " - Temperatura: "; String$(status_temperatura(dia) \ 2, Chr$(219))
+
+        ' Separar os dias no gráfico
+        Print
+
+        ' A cada 4 dias, pausar a exibição para evitar corte
+        If dia Mod 4 = 0 Then
+            Print "Pressione qualquer tecla para continuar..."
+            While InKey$ = "": Wend ' Esperar o usuário pressionar uma tecla
+            Cls ' Limpa a tela antes de exibir os próximos dias
+        End If
+    Next dia
+
+    ' Restaurar cor padrão
+    Color 7
+End Sub
