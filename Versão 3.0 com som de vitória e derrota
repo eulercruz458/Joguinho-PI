@@ -1,0 +1,346 @@
+DECLARE SUB TelaInicial ()
+DECLARE SUB AtualizaStatus (acao$, dificuldade%)
+DECLARE SUB ExibeStatus ()
+DECLARE SUB VerificaEventosAleatorios ()
+DECLARE SUB DesenhaGraficoColorido ()
+DECLARE SUB TocarMusica()
+DECLARE SUB PararMusica()
+
+Dim Shared energia, sede, moral, temperatura, dia As Integer
+Dim Shared dificuldade As Integer
+Dim Shared status_energia(20), status_sede(20), status_moral(20), status_temperatura(20) As Integer
+
+' Inicializacao
+energia = 100
+sede = 0
+moral = 100
+temperatura = 28
+dia = 1
+
+' Tela Inicial
+TelaInicial
+
+' Escolha do nivel de dificuldade
+Print "Escolha o nivel de dificuldade:"
+Print "1. Facil"
+Print "2. Medio"
+Print "3. Dificil"
+
+Do
+    Input dificuldade
+    If dificuldade = 1 Or dificuldade = 2 Or dificuldade = 3 Then
+        Exit Do
+    Else
+        Print "Digite apenas um dos numeros disponiveis nas opcoes"
+    End If
+Loop
+
+If dificuldade = 1 Then
+    dificuldade = -2
+ElseIf dificuldade = 2 Then
+    dificuldade = -3
+Else
+    dificuldade = -4
+End If
+
+' Comecar a jornada
+Cls
+Print "Voce e um viajante atravessando o deserto em busca de um oasis. Boa sorte!"
+Print "A jornada dura 20 dias. Sobreviva para vencer!"
+
+Do While dia <= 20 And energia > 0
+    Cls ' Limpa a tela a cada novo turno
+    Print "Dia "; dia
+    ExibeStatus
+
+    Print "Escolha uma acao:"
+    Print "1. Andar"
+    Print "2. Descansar"
+    If dificuldade <> -4 Then
+        Print "3. Refrescar-se"
+    End If
+    If dificuldade <> -4 Then
+        Print "4. Beber Agua"
+    End If
+
+    Do
+        Input escolha$
+        If escolha$ = "1" Or escolha$ = "2" Or (dificuldade <> -4 And escolha$ = "3") Or (dificuldade <> -4 And escolha$ = "4") Then
+            Exit Do
+        Else
+            Print "Digite apenas um dos numeros disponiveis nas opcoes"
+        End If
+    Loop
+
+    ' Processa a escolha do jogador e exibe mensagens
+    Select Case escolha$
+        Case "1"
+            AtualizaStatus "andar", dificuldade
+            Print "Você andou um árduo dia no deserto, sua energia e moral diminuíram, e sua sede e temperatura aumentaram."
+        Case "2"
+            AtualizaStatus "descansar", dificuldade
+            Print "Você recuperou energia para sua jornada, mas ficar parado também aumenta sua temperatura."
+        Case "3"
+            If dificuldade <> -4 Then
+                AtualizaStatus "refrescar", dificuldade
+                Print "Você encontrou um pequeno poço, sua sede e temperatura diminuíram, mas sua energia e moral também."
+            Else
+                Print "A opção de refrescar-se não está disponível neste nível de dificuldade."
+            End If
+        Case "4"
+            If dificuldade <> -4 Then
+                AtualizaStatus "beber agua", dificuldade
+                Print "Você bebeu água e diminuiu a sua sede."
+            Else
+                Print "Beber água não está disponível neste nível de dificuldade."
+            End If
+    End Select
+
+    ' Registro dos status
+    status_energia(dia) = energia
+    status_sede(dia) = sede
+    status_moral(dia) = moral
+    status_temperatura(dia) = temperatura
+
+    dia = dia + 1
+
+    ' Verificar condições de derrota
+    If energia <= 0 Then
+        Print "Você desmaiou de exaustao!"
+        Exit Do
+    End If
+
+    ' Verificar eventos aleatórios
+    VerificaEventosAleatorios
+
+    ' Esperar o jogador pressionar Enter antes de continuar
+    Print "Pressione Enter para continuar..."
+    While InKey$ <> Chr$(13) ' 13 é o código ASCII para Enter
+    Wend
+    Cls ' Limpa a tela antes de continuar para o próximo turno
+Loop
+
+' Verificação final de vitória
+Cls ' Limpa a tela antes de exibir a verificação final
+If energia > 40 And sede < 50 And moral >= 50 And temperatura >= 29 And temperatura <= 38 Then
+    Print "Parabens! Voce sobreviveu a travessia e chegou ao oasis!"
+    TocarMusicaVitoria ' Toca a música de vitória
+Else
+    Print "Devido as mas condicoes, voce delirou achando que estava no oasis e acabou morrendo"
+    TocarMusicaDerrota ' Toca a música de derrota
+End If
+
+' Esperar o jogador pressionar Enter antes de mostrar o gráfico
+Print "Pressione Enter para ver o gráfico de status..."
+While InKey$ <> Chr$(13) ' 13 é o código ASCII para Enter
+Wend
+Cls ' Limpa a tela antes de mostrar o gráfico
+
+' Parar música antes de exibir o gráfico
+PararMusicaFinal
+
+' Desenhar gráfico
+DesenhaGraficoColorido
+
+' Parar música
+PararMusicaFinal
+End
+
+' Música de vitória
+Sub TocarMusicaVitoria ()
+    ' Uma melodia simples para a vitória
+    Sound 784, 10 ' Sol
+    Sound 880, 10 ' Lá
+    Sound 988, 10 ' Si
+    Sound 1047, 10 ' Dó
+    Sound 1175, 10 ' Ré
+    Sound 1319, 10 ' Mi
+    Sound 1480, 10 ' Fá
+    Sound 1568, 10 ' Sol
+    Sound 0, 10
+End Sub
+
+' Música de derrota
+Sub TocarMusicaDerrota ()
+    ' Uma melodia simples para a derrota
+    Sound 262, 15 ' Dó
+    Sound 233, 15 ' Si bemol
+    Sound 196, 15 ' Sol
+    Sound 174, 15 ' Fá
+    Sound 196, 15 ' Sol
+    Sound 233, 15 ' Si bemol
+    Sound 262, 15 ' Dó
+    Sound 0, 15
+End Sub
+
+' Parar música final
+Sub PararMusicaFinal ()
+    ' Finaliza a música
+    Sound 0, 0
+End Sub
+
+' Definicao das SUBs
+
+Sub TelaInicial ()
+    Cls
+    ' Definir o texto da tela inicial
+    TEXT$ = "O Oasis Perdido: A Travessia do Deserto"
+    ' Configurar o texto em amarelo
+    Color 14 ' Amarelo
+
+    ' Calcular a largura da tela para centralizar o texto
+    TEXTWIDTH = 80
+    TEXTLENGTH = Len(TEXT$)
+
+    ' Calcular a posição horizontal para centralizar
+    X = (TEXTWIDTH - TEXTLENGTH) \ 2
+
+    ' Desenhar o texto centralizado
+    Locate 5, X + 1
+    Print TEXT$
+
+    ' Restaurar a cor do texto
+    Color 7 ' Branco
+
+    Print
+    Print "Pressione qualquer tecla para comecar..."
+
+    ' Tocar música
+    TocarMusica
+
+    ' Esperar a tecla ser pressionada para continuar
+    While InKey$ = "": Wend
+
+    ' Parar a música
+    PararMusica
+End Sub
+
+Sub AtualizaStatus (acao$, dificuldade%)
+    Select Case acao$
+        Case "andar"
+            energia = energia + dificuldade%
+            sede = sede + Abs(dificuldade%)
+            moral = moral + dificuldade% \ 2
+            temperatura = temperatura + 1
+        Case "descansar"
+            energia = energia + (10 + dificuldade%)
+            sede = sede + 2
+            temperatura = temperatura + 2 ' Aumenta a temperatura ao descansar
+        Case "refrescar"
+            If dificuldade = -2 Then
+                temperatura = temperatura - 5
+                sede = sede - 5
+                energia = energia - 10
+                moral = moral - 10
+            ElseIf dificuldade = -3 Then
+                temperatura = temperatura - 3
+                sede = sede - 3
+                energia = energia - 5
+                moral = moral - 5
+            End If
+        Case "beber agua"
+            If dificuldade = -2 Then
+                sede = sede - 15
+            ElseIf dificuldade = -3 Then
+                sede = sede - 10
+            Else
+                sede = sede - 5
+            End If
+    End Select
+
+    ' Garante que a sede fique entre 0 e 100
+    If sede < 0 Then sede = 0
+    If sede > 100 Then sede = 100
+End Sub
+
+Sub ExibeStatus ()
+    Print "Energia: "; energia
+    Print "Sede: "; sede
+    Print "Moral: "; moral
+    Print "Temperatura Corporal: "; temperatura
+End Sub
+
+Sub VerificaEventosAleatorios ()
+    Randomize Timer
+    evento = Int(Rnd * 7) + 1 ' Probabilidade de 1/7 para cada evento
+
+    Select Case evento
+        Case 1 ' Tempestade de areia
+            Print ""
+            Print "Uma tempestade de areia apareceu!"
+            energia = energia - 10
+            sede = sede + 5
+            temperatura = temperatura + 2
+        Case 2 ' Fonte de água
+            Print "Voce encontrou uma fonte de agua!"
+            sede = sede - 10
+            temperatura = temperatura - 3
+    End Select
+
+    ' Garante que a sede fique entre 0 e 100
+    If sede < 0 Then sede = 0
+    If sede > 100 Then sede = 100
+End Sub
+
+Sub DesenhaGraficoColorido ()
+    Cls
+    Print "Grafico de Status ao longo dos 20 dias:"
+
+    ' Desenho do gráfico
+    For dia = 1 To 20
+        ' Cor para Energia (Verde)
+        Color 2
+        Print "Dia "; dia; " - Energia: "; String$(status_energia(dia) \ 2, Chr$(219))
+
+        ' Cor para Sede (Azul)
+        Color 1
+        Print "Dia "; dia; " - Sede: "; String$(status_sede(dia) \ 2, Chr$(219))
+
+        ' Cor para Moral (Amarelo)
+        Color 14
+        Print "Dia "; dia; " - Moral: "; String$(status_moral(dia) \ 2, Chr$(219))
+
+        ' Cor para Temperatura (Vermelho)
+        Color 4
+        Print "Dia "; dia; " - Temperatura: "; String$(status_temperatura(dia) \ 2, Chr$(219))
+
+        ' Separar os dias no gráfico
+        Print
+
+        ' A cada 4 dias, pausar a exibição para evitar corte
+        If dia Mod 4 = 0 Then
+            Print "Pressione qualquer tecla para continuar..."
+            While InKey$ = "": Wend ' Esperar o usuário pressionar uma tecla
+            Cls ' Limpa a tela antes de exibir os próximos dias
+        End If
+    Next dia
+
+    ' Restaurar cor padrão
+    Color 7
+End Sub
+
+Sub TocarMusica ()
+    ' Melodia simples usando a instrucao SOUND em loop
+    Do
+        Sound 262, 8 ' Do
+        Sound 294, 8 ' Re
+        Sound 330, 8 ' Mi
+        Sound 349, 8 ' Fa
+        Sound 392, 8 ' Sol
+        Sound 440, 8 ' La
+        Sound 494, 8 ' Si
+        Sound 523, 8 ' Do
+        Sound 587, 8 ' Re
+        Sound 659, 8 ' Mi
+        Sound 698, 8 ' Fa
+        Sound 784, 8 ' Sol
+        Sound 880, 8 ' La
+        Sound 988, 8 ' Si
+        Sound 1047, 8 ' Do
+    Loop Until InKey$ <> ""
+End Sub
+
+Sub PararMusica ()
+    ' Finaliza a musica (se necessario)
+    Sound 0, 0
+End Sub
