@@ -189,7 +189,7 @@ Sub AtualizaStatus (acao$, dificuldade%)
         Case "descansar"
             energia = energia + (10 + dificuldade%)
             sede = sede + 2
-            temperatura = temperatura + 0.5 ' Aumenta a temperatura ao descansar
+            temperatura = temperatura + 2 ' Aumenta a temperatura ao descansar
         Case "refrescar"
             If dificuldade = -2 Then
                 temperatura = temperatura - 5
@@ -241,7 +241,7 @@ Sub VerificaEventosAleatorios ()
             If temperatura > 40 Then temperatura = 40
         Case 2 ' Fonte de água
             Print "Voce encontrou uma fonte de agua!"
-            sede = sede + 10
+            sede = sede - 10
             temperatura = temperatura - 3
             If sede > 100 Then sede = 100
             If temperatura < 28 Then temperatura = 28
